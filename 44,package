@@ -1,0 +1,178 @@
+#include<stdio.h>
+#include<stdlib.h>
+const int de1=1;
+typedef struct queue{
+	int size,head,tail,*arr,*heap;
+}queue;
+void print_q(queue **q,int l){
+	int i,j;
+	for(i=0;i<l;i++){
+		printf("line%d: ",i);
+		if(q[i]->size>0) for(j=q[i]->tail;j<=q[i]->head;j++) printf("%d ",q[i]->arr[j]);
+		printf("\n");
+	} 
+}
+queue *alloc_q(int n){
+	queue *temp;
+	temp=(queue*)malloc(sizeof(queue)*1);
+	temp->arr=(int *)malloc(sizeof(int)*n);
+	temp->heap=(int *)malloc(sizeof(int)*n);
+	temp->size=0;
+	temp->head=0;
+	temp->tail=0;
+	return temp;
+}
+void push(queue *q,int x){
+	if(q->size==0) q->arr[0]=x;
+	else{
+		int head=q->head;
+		q->head=head+1;
+		q->arr[head+1]=x;
+	}
+	q->size=q->size+1;
+}
+int peap_head(queue *q){
+	if(q->size==0) return -1;
+	return q->arr[q->head];
+}
+int peap_tail(queue *q){
+	if(q->size==0) return -1;
+	return q->arr[q->tail];
+}
+int pop_head(queue *q){
+	int x=q->head;
+	if(q->size==0) return -1;
+	else if(q->size==1){
+		q->size=0;
+		q->head=0;
+		q->tail=0;
+	}
+	else{
+		q->size=q->size-1;
+		q->head=q->head-1;
+	}
+	return q->arr[x];
+}
+int pop_tail(queue *q){
+	int x=q->tail;
+	if(q->size==0) return -1;
+	else if(q->size==1){
+		q->size=0;
+		q->head=0;
+		q->tail=0;
+	}
+	else{
+		q->size=q->size-1;
+		q->tail=q->tail+1;
+	}
+	return q->arr[x];
+}
+int peap_max(queue *q){
+	int i=q->tail,max=q->arr[i];
+	if(q->size>0){
+		for(i=q->tail;i<=q->head;i++) if(q->arr[i]>max) max=q->arr[i];
+		return max;	
+	}
+	else return -1;
+	
+}
+int pop_max(queue *q){
+	int i=0,max_i=q->tail,max;
+	if(q->size==0) return -1;
+	for(i=q->tail;i<=q->head;i++) if(q->arr[i]>q->arr[max_i]) max_i=i;	
+	max=q->arr[max_i];
+	for(i=max_i;i<=q->head-1;i++) q->arr[i]=q->arr[i+1];
+	if(q->head!=0) q->head=q->head-1;
+	q->size=q->size-1;
+	return max;
+}
+int main(){
+	int t,i,j,k,ptr_rec,boo_find,pack,line1,line2;
+	char temp[10];	
+	scanf("%d",&t);
+	while(t--){
+		ptr_rec=0;
+		int n,o,l,op1,op2,*log[3],*target,ptr_t=0,n_push=0,*status;
+		scanf("%d%d%d",&n,&o,&l);
+//record log
+		//log=(int **)malloc(sizeof(int *)*3); //log[0][i]->operation
+		for(i=0;i<3;i++) log[i]=(int *)malloc(sizeof(int)*o);	
+		for(i=0;i<o;i++){
+			scanf("%s",temp);
+			if(temp[0]=='p') log[0][i]=0;
+			else if(temp[0]=='m') log[0][i]=1;
+			scanf("%d %d",&log[1][i],&log[2][i]);
+		}
+		target=(int *)malloc(sizeof(int)*n);
+		status=(int *)malloc(sizeof(int)*(n+1));
+		for(i=0;i<=n;i++) status[i]=0;
+		for(i=0;i<n;i++) scanf("%d",&target[i]);
+		queue **q;
+		q=(queue**)malloc(sizeof(queue*)*l);
+		for(i=0;i<l;i++) q[i]=alloc_q(n);
+		for(i=0;i<o;i++){
+			if(de1) printf("\nnow in op%d:%d %d->%d\n",i,log[0][i],log[1][i],log[2][i]);
+			if(log[0][i]==0){//push
+				n_push=n_push+1;
+				pack=log[1][i];
+				line1=log[2][i];
+				if(pack==target[ptr_t]){//case1: push the target
+					ptr_t=ptr_t+1;
+					status[pack]=2;
+				} 
+				else{ //case2: no push the target 
+					push(q[line1],pack);
+					status[pack]=1;
+				} 
+				if(de1) printf("status:%d,target[ptr_t]=%d,ptr_t=%d\n",status[target[ptr_t]],target[ptr_t],ptr_t);
+				if(de1) print_q(q,l);
+				if(ptr_t>=n) break;
+				if(status[target[ptr_t]]==0) boo_find=0;//case2-1: not on the produciton line yet
+				else boo_find=1;
+				//check if package is on the production line already
+				while((ptr_t<=n_push-1)&&boo_find){ //case 2-2: on the production line already->
+				//2-2-1: find max? 2-2-2: find head and tail in every line j
+					for(j=0;j<l;j++){
+						if(de1) printf("checking line%d\n",j);
+						if(q[j]->size==0) 0;
+						else{
+							if(target[ptr_t]==peap_head(q[j])){
+								status[target[ptr_t]]=2;
+								pop_head(q[j]);
+								ptr_t=ptr_t+1;
+								if(de1) printf("pop_head:%d\n",target[ptr_t-1]);
+								break;
+							}
+							else if(target[ptr_t]==peap_tail(q[j])){
+								status[target[ptr_t]]=2;
+								pop_tail(q[j]);
+								ptr_t=ptr_t+1;
+								if(de1) printf("pop_tail:%d\n",target[ptr_t-1]);
+								break;
+							}
+							else if(target[ptr_t]==peap_max(q[j])){
+								status[target[ptr_t]]=2;
+								pop_max(q[j]);
+								ptr_t=ptr_t+1;
+								if(de1) printf("pop_max:%d\n",target[ptr_t-1]);
+								break;
+							}
+						}
+						
+						if(j==l-1) boo_find=0;
+					}
+				}
+			}	
+			else{//merge
+				while(q[log[1][i]]->size!=0) push(q[log[2][i]],pop_head(q[log[1][i]]));
+				
+			}
+		}
+		if(de1) printf("prt_t=%d\n",ptr_t);
+		if(ptr_t>=n) printf("possible\n");
+		else printf("impossible\n");
+		
+	}
+	
+	return 0;
+}
