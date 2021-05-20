@@ -2,14 +2,14 @@
 #include<stdlib.h>
 #include "generator.h"
 /* 
-1.³z¹L°Q½×ª©¤¤¹ù¬FµØ (LIAO,CHENG-HUA)
-¬P´Á¤@5¤ë10¤é 1:05
-§Ú­ì¥»¤]¹J¨ì¤@¼Ëªº°ÝÃD¡A«á¨Óªº°µªk¬OQ¸òR¤£­n²V¦b¤@°_sort¡A¦ýÁÙ¬O­n¦P®É¶i¦æ¡]¤]´N¬O§âsort Q©Msort R¼g¦b¦P¤@­Ómerge sort¸Ì¡^¡AµM«á¼Æintersectionªº¤è¦¡¦pªþ¹Ï 
-±o¨ì±Òµo:
-µ½¥Îmerge sortªº¹Lµ{¤¤¶}©l¼Æ 
- ¦pªG¥ÎPÂIªº±Æ§Ç§â°}¦CÅÜ¦¨¨â¶ô¡A´N¥i¥HÁ×§K¦b¼Æ¥æÂIªº®É­Ô¡A»Ý­n¦b²¾°ÊPÂIªº®É­Ô¡A­«·s³B²z¤w¸g±Æ§Ç¦nªºQ©MR°}¦C¤¤ªº¸ê°T¡A¹³¬Oarray shift¡A¦P®É¤]¥i¥H¥Î­ì¥ý±o¨ìªº¸ê°T 
-2. ª©¤W¦³¤H´£¤Î¦pªG¨C¦¸merge sort ¸Ì­±ªºrecursion³£°µ¤@¦¸malloc·|TLE¡AÀ³¸Óª½±µ¤@¸ô¶Ç¹L¥h¡A¦b¥~­±«Å§i¤@¦¸´N¦n¡A¨ü¯q­ê²L 
-3. ¦bªO¤W¦Û¤v°Ýªº°ÝÃD©M§U±Ðªº¦^«H: ¦p¦ó³B²zPÂI (§Ú·Q¤F«Ü¤[¤~µo²{­ì¨Ó¨º»òÂ²³æ¡AÀ³¸Ó¬O¦b±À½×ªº®É­Ô¤@ª½§Ñ°O¦Ò¼{Qmax>Qmid>Rmid¡A©Ò¥H¥u­ndescending ´N¦n¤F¡Aªá¤F¶W¤[«¢«¢ 
+1.é€éŽè¨Žè«–ç‰ˆä¸­å»–æ”¿è¯ (LIAO,CHENG-HUA)
+æ˜ŸæœŸä¸€5æœˆ10æ—¥ 1:05
+æˆ‘åŽŸæœ¬ä¹Ÿé‡åˆ°ä¸€æ¨£çš„å•é¡Œï¼Œå¾Œä¾†çš„åšæ³•æ˜¯Qè·ŸRä¸è¦æ··åœ¨ä¸€èµ·sortï¼Œä½†é‚„æ˜¯è¦åŒæ™‚é€²è¡Œï¼ˆä¹Ÿå°±æ˜¯æŠŠsort Qå’Œsort Rå¯«åœ¨åŒä¸€å€‹merge sortè£¡ï¼‰ï¼Œç„¶å¾Œæ•¸intersectionçš„æ–¹å¼å¦‚é™„åœ– 
+å¾—åˆ°å•Ÿç™¼:
+å–„ç”¨merge sortçš„éŽç¨‹ä¸­é–‹å§‹æ•¸ 
+ å¦‚æžœç”¨Pé»žçš„æŽ’åºæŠŠé™£åˆ—è®Šæˆå…©å¡Šï¼Œå°±å¯ä»¥é¿å…åœ¨æ•¸äº¤é»žçš„æ™‚å€™ï¼Œéœ€è¦åœ¨ç§»å‹•Pé»žçš„æ™‚å€™ï¼Œé‡æ–°è™•ç†å·²ç¶“æŽ’åºå¥½çš„Qå’ŒRé™£åˆ—ä¸­çš„è³‡è¨Šï¼Œåƒæ˜¯array shiftï¼ŒåŒæ™‚ä¹Ÿå¯ä»¥ç”¨åŽŸå…ˆå¾—åˆ°çš„è³‡è¨Š 
+2. ç‰ˆä¸Šæœ‰äººæåŠå¦‚æžœæ¯æ¬¡merge sort è£¡é¢çš„recursionéƒ½åšä¸€æ¬¡mallocæœƒTLEï¼Œæ‡‰è©²ç›´æŽ¥ä¸€è·¯å‚³éŽåŽ»ï¼Œåœ¨å¤–é¢å®£å‘Šä¸€æ¬¡å°±å¥½ï¼Œå—ç›ŠåŒªæ·º 
+3. åœ¨æ¿ä¸Šè‡ªå·±å•çš„å•é¡Œå’ŒåŠ©æ•™çš„å›žä¿¡: å¦‚ä½•è™•ç†Pé»ž (æˆ‘æƒ³äº†å¾ˆä¹…æ‰ç™¼ç¾åŽŸä¾†é‚£éº¼ç°¡å–®ï¼Œæ‡‰è©²æ˜¯åœ¨æŽ¨è«–çš„æ™‚å€™ä¸€ç›´å¿˜è¨˜è€ƒæ…®Qmax>Qmid>Rmidï¼Œæ‰€ä»¥åªè¦descending å°±å¥½äº†ï¼ŒèŠ±äº†è¶…ä¹…å“ˆå“ˆ 
 */ 
 const int de=0;
 const int de2=0;
@@ -32,12 +32,7 @@ void print_data(int n,int *p,int *q,int *r){
 	
 }
 void merge(int *arr,int *seq,int l0,int lm,int l1,int *temp,int *q){  //write seq->temp
-	int ptr1=l0,ptr2=lm+1,ptr3=l0,i;//´«¤F¤èªk­n°O±o§ïptr3°_ÂI¡A§ä¤F¦n¤[ 
-	if(de5) printf("start merge%d-%d-%d\n",l0,lm,l1);
-	if(de5) for(i=l0;i<=lm;i++) printf("%d ",arr[seq[i]]);
-	if(de5) printf("\n");
-	if(de5) for(i=lm+1;i<=l1;i++) printf("%d ",arr[seq[i]]);
-	if(de5) printf("\n");
+	int ptr1=l0,ptr2=lm+1,ptr3=l0,i;//æ›äº†æ–¹æ³•è¦è¨˜å¾—æ”¹ptr3èµ·é»žï¼Œæ‰¾äº†å¥½ä¹… 
 	if(l1==l0) temp[seq[l1]]=seq[l1];
 	else{
 		while(ptr1<=lm|ptr2<=l1){
@@ -52,7 +47,7 @@ void merge(int *arr,int *seq,int l0,int lm,int l1,int *temp,int *q){  //write se
 					//if(de5) printf("ptr1 larger:%d>  ptr2=%d->seq[ptr]=%d->arr=%d\n",arr[seq[ptr1]],ptr2,seq[ptr2],arr[seq[ptr2]]);
 					temp[ptr3]=seq[ptr2];
 					ptr2=ptr2+1;
-				}//PÂI¬Û¦P 
+				}//Pé»žç›¸åŒ 
 				else if(arr[seq[ptr1]]==arr[seq[ptr2]]){
 					if(q[seq[ptr1]]>q[seq[ptr2]]){
 						temp[ptr3]=seq[ptr1];
@@ -79,22 +74,11 @@ void merge(int *arr,int *seq,int l0,int lm,int l1,int *temp,int *q){  //write se
 					ptr3=ptr3+1;
 				}
 			}
-			if(de5) for(i=l0;i<lm;i++) printf("(%d,%d)",arr[temp[i]],q[temp[i]]);
-			if(de5) printf("\n");
-			if(de5) for(i=lm+1;i<=l1;i++) printf("(%d,%d)",arr[temp[i]],q[temp[i]]);
-			if(de5) printf("\n");
 		}
 	}
 	
-	
-	//for(i=0;i<l1-l0+1;i++) seq[l0+i]=temp[i];
-	//if(de5) for(i=0;i<l1-l0+1;i++) printf("(%d,%d)",arr[temp[l0+i]],q[seq[l0+i]]);
-	//if(de5) printf("\n");
-	if(de5) printf("end merging\n\n");
-	
 }
 void merge_sort(int *p,int *seq,int l0,int l1,int *index3,int *q,int x){//seq has information, index is aux
-	if(de5) printf("start sorting between %d %d\n",l0,l1);
 	int lm=(l0+l1)/2;
 	x=x*-1;
 	if(l1>l0){
@@ -162,8 +146,7 @@ void *merge_qr(int *q,int *r,int *seq,int *seq2,int qr0,int qrm,int qr1,long lon
 		}
 		
 	}
-	//for(i=0;i<qr1-qr0+1;i++) seq[qr0+i]=temp[i];
-	
+
 	ptr1=qr0,ptr2=qrm+1,ptr3=qr0;
 	while(ptr1<=qrm|ptr2<=qr1){ 
 		if(ptr1<=qrm&ptr2<=qr1){
@@ -191,9 +174,7 @@ void *merge_qr(int *q,int *r,int *seq,int *seq2,int qr0,int qrm,int qr1,long lon
 				ptr3=ptr3+1;
 			}
 		}
-		
 	}
-	//for(i=0;i<qr1-qr0+1;i++) seq2[qr0+i]=temp[i];
 }
 
 void merge_sort_qr(int *q,int *r,int *seq,int *seq2,int qr0,int qr1,long long *counter,int *temp,int *mark,int x){
@@ -265,7 +246,3 @@ int main() {
 	}
 	return 0;
 }
-
-
-
-
