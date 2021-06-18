@@ -1,0 +1,121 @@
+#include<stdio.h>
+#include<stdlib.h>
+const int de1=1;
+int stop=0;
+typedef struct element{
+	int a,b;
+	int color;//1white->2gray->3black 
+}unit;
+
+int check(int **arr,int n){
+	int i,ans;
+	for(i=1;i<=n;i++) if(arr[i][0]!=0) return 0;
+	return 1;
+}
+void print_result(unit *process_u,int *process_t){
+	int i,n=*process_t-1;
+	printf("Yes\n");
+	for(i=n;i>=0;i--) printf("%d %d\n",process_u[i].a,process_u[i].b);
+}
+void print_status(unit *process_u,int *process_t){
+	int i,n=*process_t-1;
+	for(i=n;i>=0;i--) printf("%d %d\n",process_u[i].a,process_u[i].b);
+}
+void DFS_visit(int **arr,int n,unit *waiting_u,int *waiting_t,unit *process_u,int *process_t,int a,int b){//when want DFS_main to end-> turn top color to 2
+	if(stop==1) return;
+	if(de1) printf("now visiting (%d,%d)\n",a,b);
+	process_u[*process_t].a=a;
+	process_u[*process_t].b=b;
+	process_u[*process_t].color=2;
+	*process_t++;
+	int i,c,d,m,insert_location=*process_t;
+	arr[a][0]--;
+	arr[b][0]--;
+	if(check(arr,n)==1){
+		if(de1) printf("find the ans\n");
+		print_result(process_u,process_t);
+		if(*waiting_t==0) *waiting_t++;
+		waiting_u[*waiting_t-1].color=2;
+		stop=1;
+	}
+	else{
+		for(i=1;i<=n;i++){
+			m=arr[i][0];
+			if(m>0) c=arr[i][m];
+			if(arr[c][0]>0) d=arr[c][arr[c][0]];
+			if(d==i&c<d) DFS_visit(arr,n,waiting_u,waiting_t,process_u,process_t,c,d);
+		}
+		if(stop==0){
+			if(de1) printf("dead end\n");
+			for(i=insert_location;i<*process_t;i++){
+				*process_t--;
+				c=process_u[*process_t].a;
+				d=process_u[*process_t].b;
+				arr[c][0]++;
+				arr[d][0]++;
+			}
+		}
+	}
+}
+
+void DFS_main(int **arr,int n){
+	if(de1) printf("hello?\n");
+	int i,m,a,b;
+	
+	unit waiting_u[200010];
+	
+	int *waiting_t;
+	
+	*waiting_t=0;
+	//stack *waiting=(stack *)malloc(sizeof(stack)*1);
+	//waiting->top=0;
+	for(i=1;i<=n;i++){
+		m=arr[i][0];
+		if(m>0){
+			a=arr[i][m];
+			if(arr[a][0]>0){
+				b=arr[a][arr[a][0]];
+				if(b==i&&a<b){
+					waiting_u[*waiting_t].a=a;
+					waiting_u[*waiting_t].b=b;
+					waiting_u[*waiting_t].color=1;
+					waiting_t++; 
+				}
+			}
+			
+		}
+		 
+	}
+	unit process_u[200010];
+	int *process_t;
+	*process_t=0;
+	while(waiting_t>0&&waiting_u[*waiting_t-1].color==1){
+		if(de1) printf("call visit\n");
+		*waiting_t--;
+		a=waiting_u[*waiting_t].a;
+		b=waiting_u[*waiting_t].b;
+		DFS_visit(arr,n,waiting_u,waiting_t,process_u,process_t,a,b);
+	}
+	if(check(arr,n)==1&&stop==0) printf("Yes");
+	else if(*waiting_t==0) printf("No");
+	
+}
+
+int main(){
+	int n,i,j,k,a,b,**arr;
+	arr=(int **)malloc(sizeof(int*)*100010);
+	scanf("%d",&n);
+	
+	for(i=1;i<=n;i++){
+		scanf("%d",&a);
+		arr[i]=(int *)malloc(sizeof(int)*(a+1));
+		arr[i][0]=a;
+		for(j=1;j<=a;j++){
+			scanf("%d",&b);
+			arr[i][j]=b;
+		}
+	} 	
+	//if(de1) printf("arr[1][0]=%d\n",arr[1][0]);
+	DFS_main(arr,n);
+	return 0;
+}
