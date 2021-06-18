@@ -58,14 +58,11 @@ void DFS_visit(int **arr,int n,unit *waiting_u,int *waiting_t,unit *process_u,in
 	}
 }
 
-void DFS_main(int **arr,int n){
+void DFS_main(int **arr,int n,int *waiting_t,int *process_t){
 	if(de1) printf("hello?\n");
 	int i,m,a,b;
 	
 	unit waiting_u[200010];
-	
-	int *waiting_t;
-	
 	*waiting_t=0;
 	//stack *waiting=(stack *)malloc(sizeof(stack)*1);
 	//waiting->top=0;
@@ -87,7 +84,6 @@ void DFS_main(int **arr,int n){
 		 
 	}
 	unit process_u[200010];
-	int *process_t;
 	*process_t=0;
 	while(waiting_t>0&&waiting_u[*waiting_t-1].color==1){
 		if(de1) printf("call visit\n");
@@ -102,7 +98,8 @@ void DFS_main(int **arr,int n){
 }
 
 int main(){
-	int n,i,j,k,a,b,**arr;
+	int n,i,j,k,a,b,**arr,t1,t2;
+	int *wait_t=&t1,*process_t=&t2;
 	arr=(int **)malloc(sizeof(int*)*100010);
 	scanf("%d",&n);
 	
@@ -115,7 +112,8 @@ int main(){
 			arr[i][j]=b;
 		}
 	} 	
-	//if(de1) printf("arr[1][0]=%d\n",arr[1][0]);
-	DFS_main(arr,n);
+	if(de1) printf("arr[1][0]=%d\n",arr[1][0]);
+	DFS_main(arr,n,wait_t,process_t);
 	return 0;
 }
+/*
