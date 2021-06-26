@@ -209,22 +209,19 @@ void similar(int index){
 int main(void) {
 	api.init(&n_mails, &n_queries, &mails, &queries);
 	hash_max=82595483; //the max prime<(INT_MAX-26)/26
-	pre_processing_1();
-	pre_processing_2();
-	
 	ans_sum=0;
 	struct people *A,*B;
+	pre_processing_1();
+	pre_processing_2();
+
 	for(i=0;i<n_queries;i++){
 		
 		if(queries[i].type==expression_match){  //subtask1 expression_match
 			//api.answer(queries[i].id, NULL, 0);
 		}
 		else if(queries[i].type==find_similar){  //subtask2 find_similar
-		
-			//if(de1) fprintf(fdebug,"query mid=%d,threshold=%lf\n",queries[i].data.find_similar_data.mid,queries[i].data.find_similar_data.threshold);
 			similar(i); 
 			api.answer(queries[i].id, ans, ans_sum);
-			
 		}
 		else if(queries[i].type==group_analyse){  //subtask3 group_analyse
 		/*
