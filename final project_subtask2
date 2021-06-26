@@ -1,0 +1,63 @@
+FILE *fdebug;//global var
+
+
+
+
+//subtask 2 begin
+//ref:  https://www.geeksforgeeks.org/union-and-intersection-of-two-sorted-arrays-2/ (感覺類似merge sort) 
+const int de1=1;
+void similar(int index,int **ans,int *ans_sum){
+	if(de1) fprintf(fdebug,"in func similar\n");
+	*ans_sum=0;
+	double similarity,cmp;
+	int ptrA,ptrB,A,B,intersect; 
+	A=set[index].sum;
+	for(j=0;j<n_mails,j!=index;j++){ //乾我忘了i是全域變數 
+		ptrA=0;
+		ptrB=0;
+		intersect=0;
+		B=set[j].sum;
+		if(de1) fprintf(fdebug,"cmp with mail %d,A=%d,B=%d\n",j,A,B);
+		while(ptrA<A&&ptrB<B){
+			if(de1) fprintf(fdebug,"ptrA:%d,ptrB:%d,intersect:%d\n",ptrA,ptrB,intersect);
+			cmp=cmp_token(&set[index].token[ptrA],&set[j].token[ptrB]);
+			if(cmp>0) ptrB+=1;
+			else if(cmp<0) ptrA+=1;
+			else{
+				ptrA+=A;
+				ptrB+=1;
+				intersect+=1;
+			}
+		}
+		
+		similarity=(double)intersect/((double)A+(double)B-(double)intersect);
+		if(similarity>=queries[j].data.find_similar_data.threshold){
+			if(de1) fprintf(fdebug,"\nans++\n\n");
+			*ans[*ans_sum]=i;
+			*ans_sum=*ans_sum+1;
+		}
+		if(de1) fprintf(fdebug,"\n"); 
+	}
+	if(de1) fprintf(fdebug,"end func similar\n");
+}
+
+
+
+
+//in func main->
+for(i=0;i<n_queries;i++){
+		if(de1) fdebug=fopen("dubug_log.txt","w");
+		if(queries[i].type==expression_match){  //subtask1 expression_match
+			//api.answer(queries[i].id, NULL, 0);
+		}
+		else if(queries[i].type==find_similar){  //subtask2 find_similar
+			if(de1) fprintf(fdebug,"query mid=%d,threshold=%lf\n",queries[i].data.find_similar_data.mid,queries[i].data.find_similar_data.threshold);
+			similar(i,&ans,&ans_sum); 
+			api.answer(queries[i].id, ans, ans_sum);
+		}
+		else if(queries[i].type==group_analyse){  //subtask3 group_analyse
+			api.answer(queries[i].id,ans,2);
+		}	
+	} 
+	if(de1) fclose(fdebug);
+
