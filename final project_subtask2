@@ -14,7 +14,7 @@ int length; //used in for loop
 int ans_sum;
 int ans[10000];
 const int de1=1;
-const int de2=1;
+const int de2=0;
 
 struct people{
 	char name[32];
@@ -51,7 +51,7 @@ int cmp_token(const void *a,const void *b){
 }
 
 void init_token(int index,int begin,int type,int l,int hash){
-	if(set[index].sum+1==set[index].size){
+	if(set[index].sum+1>=set[index].size){
 		set[index].token=(struct tokens *)realloc(set[index].token,5*set[index].size*sizeof(struct tokens));
 		set[index].size*=5;
 	}
@@ -77,7 +77,7 @@ void pre_processing_1(){
 			if(isalnum(mails[i].subject[j])){
 				l++;
 				hash*=26;
-				if(isupper(mails[i].subject[j])) tolower(mails[i].subject[j]);
+				if(isupper(mails[i].subject[j])) mails[i].subject[j]=tolower(mails[i].subject[j]);
 				if(isdigit(mails[i].subject[j])) hash+=mails[i].subject[j]-'0';
 				if(islower(mails[i].subject[j])) hash+=mails[i].subject[j]-'a';
 				if(hash>=hash_max) hash%=hash_max;
@@ -88,7 +88,7 @@ void pre_processing_1(){
 					l=0;
 					hash=0;
 				}
-				begin=i+1;
+				begin=j+1;
 			}
 		}
 		length=strlen(mails[i].content);
@@ -97,7 +97,7 @@ void pre_processing_1(){
 			if(isalnum(mails[i].content[j])){
 				l++;
 				hash*=26;
-				if(isupper(mails[i].content[j])) tolower(mails[i].content[j]);
+				if(isupper(mails[i].content[j])) mails[i].content[j]=tolower(mails[i].content[j]);
 				if(isdigit(mails[i].content[j])) hash+=mails[i].content[j]-'0';
 				if(islower(mails[i].content[j])) hash+=mails[i].content[j]-'a';
 				if(hash>=hash_max) hash%=hash_max;
@@ -108,35 +108,16 @@ void pre_processing_1(){
 					l=0;
 					hash=0;
 				}
-				begin=i+1;
+				begin=j+1;
 			}
 		}
-		if(de2&&i<10){
-			fprintf(fdebug,"in mail %d:****************\nbefore qsort:\n",i);
-			for(j=0;j<set[i].sum;j++) fprintf(fdebug,"%s ",set[i].token[j].word);
-			fprintf(fdebug,"\n");
-		}
 		qsort(set[i].token,set[i].sum,sizeof(struct tokens),cmp_token);
-	
-		if(de2&&i<10){
-			fprintf(fdebug,"after qsort\n");
-			for(j=0;j<set[i].sum;j++) fprintf(fdebug,"%s ",set[i].token[j].word);
-			fprintf(fdebug,"\n");
-		}
-		
 		for(j=1;j<set[i].sum;j++){
 			cmp=cmp_token(&set[i].token[j],&set[i].token[j-1]);
 			if(cmp==0) n_re+=1;
 			else if(n_re>0) set[i].token[j-n_re]=set[i].token[j];
 		}
 		set[i].sum=set[i].sum-n_re;
-		if(de2&&i<=10){
-			fprintf(fdebug,"after deleteing same:\n");
-			for(j=0;j<set[i].sum;j++) fprintf(fdebug,"%s ",set[i].token[j].word);
-			fprintf(fdebug,"\n");
-		}
-		
-		
 	}
 }
 //pre-processing 1 end
@@ -200,23 +181,16 @@ struct people *find_set(struct people *p,int id){
 //subtask 2 begin
 //ref:  https://www.geeksforgeeks.org/union-and-intersection-of-two-sorted-arrays-2/ (感覺類似merge sort) 
 void similar(int index){
-	//if(de1) fprintf(fdebug,"in func similar\n");
 	ans_sum=0;
-	double similarity,cmp,A,B,intersect,threshold;
 	int ptrA,ptrB,mid,index_ans;
-	mid=queries[index].data.find_similar_data.mid; 
-	A=(double)set[mid].sum;
-	
-	for(j=0;j<n_mails,j!=mid;j++){ //i is global variable
-		//if(de2) for(k=0;k<A;k++) fprintf(fdebug,"%s ",set[mid].token[k].word);
-		//if(de2) fprintf(fdebug,"\n");
-		ptrA=0;
-		ptrB=0;
-		intersect=0;
+	mid=queries[index].data.find_similar_data.mid;
+	double similarity,cmp,A=(double)set[mid].sum,B,intersect,threshold;
+	 
+	for(j=0;j<n_mails;j++){ 
+		if(j==mid) continue;
+		ptrA=ptrB=intersect=0;
 		B=(double)set[j].sum;
-		//if(de1) fprintf(fdebug,"cmp with mail %d,A=lf,B=lf\n",j,A,B);
 		while(ptrA<A&&ptrB<B){
-			//if(de1) fprintf(fdebug,"ptrA:%d,ptrB:%d,intersect:lf\n",ptrA,ptrB,intersect);
 			cmp=cmp_token(&set[mid].token[ptrA],&set[j].token[ptrB]);
 			if(cmp>0) ptrB+=1;
 			else if(cmp<0) ptrA+=1;
@@ -227,19 +201,14 @@ void similar(int index){
 			}
 		}
 		similarity=intersect/(A+B-intersect);
-		threshold=queries[index].data.find_similar_data.threshold;
-		if(similarity>threshold) ans[ans_sum++]=j;
-		//if(de1) fprintf(fdebug,"\n"); 
-
+		if(similarity>queries[index].data.find_similar_data.threshold) ans[ans_sum++]=j;
 	}
-	//if(de1) fprintf(fdebug,"end func similar\n");
 }
-
+//subtask2 ends
 
 int main(void) {
 	api.init(&n_mails, &n_queries, &mails, &queries);
 	hash_max=82595483; //the max prime<(INT_MAX-26)/26
-	if(de1|de2) fdebug=fopen("dubug_log.txt","w");
 	pre_processing_1();
 	pre_processing_2();
 	
@@ -258,6 +227,7 @@ int main(void) {
 			
 		}
 		else if(queries[i].type==group_analyse){  //subtask3 group_analyse
+		/*
 			ans[0]=0;
 			ans[1]=0;
 			for(j=0;j<queries[i].data.group_analyse_data.len;j++){
@@ -281,23 +251,10 @@ int main(void) {
 				}
 			}
 			api.answer(queries[i].id,ans,2);
+		*/	
 		}	
+		
 	} 
-	if(de1|de2) fclose(fdebug);
+	
 	return 0;
 }
-/*garbage
-
-	if(ptrA<A){
-					while(cmp_token(&set[mid].token[ptrA],&set[mid].token[ptrA-1])==0){
-						if(ptrA<A) ptrA+=1;	
-						else break;
-					} 
-				}
-				if(ptrB<B){
-					while(cmp_token(&set[j].token[ptrB],&set[j].token[ptrB-1])==0){
-						if(ptrB<B) ptrB+-1;
-						else break;
-					} 
-				}
-*/
