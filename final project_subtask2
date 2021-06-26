@@ -177,22 +177,23 @@ struct people *find_set(struct people *p,int id){
 
 //subtask 2 begin
 //ref:  https://www.geeksforgeeks.org/union-and-intersection-of-two-sorted-arrays-2/ (感覺類似merge sort) 
-const int de1=1;
+const int de1=0;
+const int de2=1;
 void similar(int index,int **ans,int *ans_sum){
 	if(de1) fprintf(fdebug,"in func similar\n");
 	*ans_sum=0;
-	double similarity,cmp;
-	int ptrA,ptrB,A,B,intersect,mid;
+	double similarity,cmp,A,B,intersect,threshold;
+	int ptrA,ptrB,mid,index_ans;
 	mid=queries[index].data.find_similar_data.mid; 
-	A=set[mid].sum;
+	A=(double)set[mid].sum;
 	for(j=0;j<n_mails,j!=mid;j++){ //i is global variable
 		ptrA=0;
 		ptrB=0;
 		intersect=0;
-		B=set[j].sum;
-		if(de1) fprintf(fdebug,"cmp with mail %d,A=%d,B=%d\n",j,A,B);
+		B=(double)set[j].sum;
+		if(de1) fprintf(fdebug,"cmp with mail %d,A=lf,B=lf\n",j,A,B);
 		while(ptrA<A&&ptrB<B){
-			if(de1) fprintf(fdebug,"ptrA:%d,ptrB:%d,intersect:%d\n",ptrA,ptrB,intersect);
+			if(de1) fprintf(fdebug,"ptrA:%d,ptrB:%d,intersect:lf\n",ptrA,ptrB,intersect);
 			cmp=cmp_token(&set[mid].token[ptrA],&set[j].token[ptrB]);
 			if(cmp>0) ptrB+=1;
 			else if(cmp<0) ptrA+=1;
@@ -203,12 +204,18 @@ void similar(int index,int **ans,int *ans_sum){
 			}
 		}
 
-		similarity=(double)intersect/((double)A+(double)B-(double)intersect);
-		if(similarity>=queries[i].data.find_similar_data.threshold){
+		similarity=intersect/(A+B-intersect);
+		threshold=queries[index].data.find_similar_data.threshold;
+		if(similarity>=threshold){
+			
 			if(de1) fprintf(fdebug,"\nsim=%lf,threshold=%lf->ans++\n\n",similarity,queries[j].data.find_similar_data.threshold);
-			*ans[*ans_sum]=j;
+			index_ans=*ans_sum;
+			if(de2) fprintf(fdebug,"ans_sum=%d\n",*ans_sum);
+			*ans[index_ans]=j;
 			*ans_sum+=1;
+			
 		}
+
 		if(de1) fprintf(fdebug,"\n"); 
 
 	}
@@ -222,19 +229,22 @@ int main(void) {
 	
 	pre_processing_1();
 	pre_processing_2();
-	
-	int ans[10000];
+	if(de1|de2) fdebug=fopen("dubug_log.txt","w");
+	int *ans;
+	ans=(int *)malloc(sizeof(int)*10000);
 	int ans_sum=0;
 	struct people *A,*B;
 	for(i=0;i<n_queries;i++){
-		if(de1) fdebug=fopen("dubug_log.txt","w");
+		
 		if(queries[i].type==expression_match){  //subtask1 expression_match
 			//api.answer(queries[i].id, NULL, 0);
 		}
 		else if(queries[i].type==find_similar){  //subtask2 find_similar
+		
 			if(de1) fprintf(fdebug,"query mid=%d,threshold=%lf\n",queries[i].data.find_similar_data.mid,queries[i].data.find_similar_data.threshold);
 			similar(i,&ans,&ans_sum); 
 			api.answer(queries[i].id, ans, ans_sum);
+			
 		}
 		else if(queries[i].type==group_analyse){  //subtask3 group_analyse
 			ans[0]=0;
@@ -262,7 +272,7 @@ int main(void) {
 			api.answer(queries[i].id,ans,2);
 		}	
 	} 
-	if(de1) fclose(fdebug);
+	if(de1|de2) fclose(fdebug);
 	return 0;
 }
 /*garbage
