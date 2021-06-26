@@ -111,11 +111,15 @@ void pre_processing_1(){
 				begin=i+1;
 			}
 		}
-		
+		if(de2&&i<10){
+			fprintf(fdebug,"in mail %d:****************\nbefore qsort:\n",i);
+			for(j=0;j<set[i].sum;j++) fprintf(fdebug,"%s ",set[i].token[j].word);
+			fprintf(fdebug,"\n");
+		}
 		qsort(set[i].token,set[i].sum,sizeof(struct tokens),cmp_token);
 	
-		if(de2&&i<100){
-			fprintf(fdebug,"in mail %d:****************\noriginal\n",i);
+		if(de2&&i<10){
+			fprintf(fdebug,"after qsort\n");
 			for(j=0;j<set[i].sum;j++) fprintf(fdebug,"%s ",set[i].token[j].word);
 			fprintf(fdebug,"\n");
 		}
@@ -126,7 +130,7 @@ void pre_processing_1(){
 			else if(n_re>0) set[i].token[j-n_re]=set[i].token[j];
 		}
 		set[i].sum=set[i].sum-n_re;
-		if(de2&&i<=1500){
+		if(de2&&i<=10){
 			fprintf(fdebug,"after deleteing same:\n");
 			for(j=0;j<set[i].sum;j++) fprintf(fdebug,"%s ",set[i].token[j].word);
 			fprintf(fdebug,"\n");
