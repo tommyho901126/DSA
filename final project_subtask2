@@ -37,6 +37,7 @@ struct tokens_array{
 	struct tokens *token;
 	int sum;
 	int size; //size of token
+	double sim[10000];
 };
 struct tokens_array set[10000];
 
